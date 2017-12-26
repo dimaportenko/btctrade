@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, RefreshControl, FlatList } from 'react-native';
+import { Header } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { sellBuyFetch } from '../actions';
 import CurrencyRow from './CurrencyRow';
@@ -28,6 +29,10 @@ class Main extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <Header
+                    backgroundColor="gray"
+                    centerComponent={{ text: 'Currency Rates', style: { color: '#fff' } }}
+                />
                 <FlatList
                     refreshControl={
                         <RefreshControl
@@ -47,7 +52,6 @@ class Main extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 40,
     },
 });
 
