@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-// import { Button } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { sellBuyFetch } from '../actions';
 
@@ -41,18 +41,17 @@ class CurrencyRow extends Component {
         )
     }
 
-    renderRefreshButton = () => <View />;
-    // renderRefreshButton() {
-    //     if (!this.state.fetching) {
-    //         return (
-    //             <Button
-    //                 icon={{ name: 'refresh', color: '#4496EC' }}
-    //                 backgroundColor='rgba(0, 0, 0, 0)'
-    //                 onPress={this.refresh}
-    //             />
-    //         );
-    //     }
-    // }
+    renderRefreshButton() {
+        if (!this.state.fetching) {
+            return (
+                <Button
+                    icon={{ name: 'refresh', color: '#4496EC' }}
+                    backgroundColor='rgba(0, 0, 0, 0)'
+                    onPress={this.refresh}
+                />
+            );
+        }
+    }
 
     render() {
         return (

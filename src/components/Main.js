@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, View, StyleSheet, RefreshControl, FlatList } from 'react-native';
+import { View, StyleSheet, RefreshControl, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import { sellBuyFetch } from '../actions';
 import CurrencyRow from './CurrencyRow';
@@ -9,44 +9,15 @@ class Main extends Component {
         refreshing: false
     };
 
-    // renderCurrencies() {
-    //     return Object.values(this.props.currencies).map(item => {
-    //         return (
-    //             <CurrencyRow
-    //                 key={item.code}
-    //                 code={item.code}
-    //                 title={item.title}
-    //             />
-    //         );
-    //     });
-    // }
-
     onRefresh = () => {
         Object.values(this.props.currencies).map(item => {
             this.props.sellBuyFetch(item.code);
         });
     };
 
-    // render() {
-    //     return (
-    //         <View style={styles.container}>
-    //             <ScrollView
-    //                 refreshControl={
-    //                     <RefreshControl
-    //                         refreshing={this.state.refreshing}
-    //                         onRefresh={this.onRefresh}
-    //                     />
-    //                 }
-    //             >
-    //                 {this.renderCurrencies()}
-    //             </ScrollView>
-    //         </View>
-    //     );
-    // }
+    keyExtractor = (item, index) => item.code;
 
-    _keyExtractor = (item, index) => item.code;
-
-    _renderItem = ({item}) => (
+    renderItem = ({item}) => (
         <CurrencyRow
             key={item.code}
             code={item.code}
@@ -64,9 +35,9 @@ class Main extends Component {
                             onRefresh={this.onRefresh}
                         />
                     }
-                    keyExtractor={this._keyExtractor}
+                    keyExtractor={this.keyExtractor}
                     data={Object.values(this.props.currencies)}
-                    renderItem={this._renderItem}
+                    renderItem={this.renderItem}
                 />
             </View>
         );
