@@ -29,10 +29,6 @@ class Main extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Header
-                    backgroundColor="gray"
-                    centerComponent={{ text: 'Currency Rates', style: { color: '#fff' } }}
-                />
                 <FlatList
                     refreshControl={
                         <RefreshControl

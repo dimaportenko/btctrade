@@ -1,20 +1,31 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
+import { FormLabel, FormInput, Button } from 'react-native-elements';
+import { btcTradeApi } from '../api';
 
 
 class Login extends Component {
 
-    onChangePublic = (text) => {
+    state = {
+        publicKey: '',
+        privateKey: ''
+    };
 
+    onChangePublic = (text) => {
+        this.setState({publicKey: text});
     };
 
     onChangePrivate = (text) => {
-
+        this.setState({privateKey: text});
     };
 
     onSubmitPress = () => {
-
+        btcTradeApi.auth(this.state.publicKey, this.state.privateKey)
+            .then(data => {
+                console.log('onSubmitResponse');
+                console.log(data);
+            })
+            .catch(error => console.log(error));
     };
 
     render() {
