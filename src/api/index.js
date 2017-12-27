@@ -29,72 +29,47 @@ class BTCTradeApi {
     // get(path, params, data) {
     //     return this.send(path, 'GET', params, data);
     // }
-    //
-    // send(url, method, params, data) {
-    //     let uri = `${this.base_url}${this.root_path}${url}`;
-    //
-    //     if (params) {
-    //         let separator = '?';
-    //         Object.keys(params).forEach(key => {
-    //             uri += `${separator}${key}=${params[key]}`;
-    //             separator = '&';
-    //         });
-    //     }
-    //
-    //     //check if there's any missing parameters
-    //     const missingFields = uri.match(/(\{[a-zA-Z0-9_]+\})/g);
-    //     if (missingFields && missingFields.length > 0) {
-    //         return Promise.reject(`URL missing parameters: ${missingFields.join(', ')}`);
-    //     }
-    //
-    //     const headers = {
-    //         'User-Agent': this.configuration.userAgent,
-    //         'Content-Type': 'application/json'
-    //     };
-    //     if (this.access_token) {
-    //         headers.Authorization = `Bearer ${this.access_token}`;
-    //     }
-    //
-    //     return new Promise((resolve, reject) => {
-    //         console.log({ uri, method, headers, data, ...params });
-    //         fetch(uri, { method, headers, body: JSON.stringify(data) })
-    //             .then(response => {
-    //                 console.log(response);
-    //                 return response.json();
-    //             })
-    //             .then(responseData => {
-    //                 // TODO: check response code
-    //                 // debugger;
-    //                 console.log(responseData);
-    //                 resolve(responseData);
-    //             })
-    //             .catch(error => {
-    //                 console.log(error);
-    //                 reject(error);
-    //             });
-    //     });
-    // }
 
     constructor() {
         this.base_url = 'https://btc-trade.com.ua/api';
     }
 
+    // curl -k   -i -H "api-sign: 9925916858e6361ffb88fc0b71d763355ea979e3ac62a6acaa8fe4a8ba548abf"
+    // -H "public-key: 9e6ea26cc7314d6dea8359f8ed5de68b2b5f0ec8daa0d5eac96b86d2b44ada38"
+    // --data "out_order_id=2&nonce=1" -v  https://btc-trade.com.ua/api/balance
+
+    getBalance() {
+        const url = `${this.base_url}/balance`;
+        return this.post(url);
+    }
+
     auth(publicKey, privateKey) {
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+
         const url = `${this.base_url}/auth`;
+        return this.post(url);
+    }
+
+    post(url, params) {
+        return this.send(url, 'POST', params);
+    }
+
+    send(url, method, params = {}) {
         const outOrderId = Math.floor(Math.random() * 100 + 2);
         const nonce = Math.floor(Math.random() * (outOrderId - 1));
-        const hashData = `nonce=${nonce}&out_order_id=${outOrderId}${privateKey}`;
-        const method = 'POST';
+        const body = this.createFormData({
+            nonce,
+            out_order_id: outOrderId,
+            ...params
+        });
+        const hashData = `${body}${this.privateKey}`;
         const apiSign = sha256(hashData);
         const headers = {
             'api-sign': apiSign,
-            'public-key': publicKey,
+            'public-key': this.publicKey,
             'Content-Type': 'application/x-www-form-urlencoded'
         };
-        const body = this.createFormData({
-            nonce,
-            out_order_id: outOrderId
-        });
 
         return new Promise((resolve, reject) => {
             console.log({ url, method, headers, body});

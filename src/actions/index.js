@@ -5,7 +5,10 @@ import {
     SELL_BUY_FETCH,
     SELL_BUY_FETCHING,
     BTC_AUTH_SUCCESS,
-    BTC_AUTH_FAIL
+    BTC_AUTH_FAIL,
+    BTC_CHECK_AUTH_KEYS,
+    BTC_AUTH_IN_PROGRESS,
+    BTC_ACCOUNT_BALANCE
 } from "./types";
 
 export const sellBuyFetch = (code) => {
@@ -53,20 +56,65 @@ export const sellBuyFetch = (code) => {
 
 export const auth = (publicKey, privateKey) => {
     return dispatch => {
-        btcTradeApi.auth(this.state.publicKey, this.state.privateKey)
+        dispatch({ type: BTC_AUTH_IN_PROGRESS, payload: true });
+        btcTradeApi.auth(publicKey, privateKey)
             .then(data => {
                 console.log('onSubmitResponse');
                 console.log(data);
                 if (data.status && data.public_key === publicKey) {
-                    AsyncStorage.setItem('public_key', publicKey)
-                        .then(() => AsyncStorage.setItem('privet_key', privateKey)
-                            .then(() => {
-                                dispatch({ type: BTC_AUTH_SUCCESS, payload: {privateKey, publicKey}})
-                            }) );
+                    saveKeys(publicKey, privateKey, dispatch);
                 } else {
                     dispatch({ type: BTC_AUTH_FAIL })
                 }
             })
             .catch(error => console.log(error));
     };
+};
+
+const saveKeys = (publicKey, privateKey, dispatch) => {
+    AsyncStorage.setItem('public_key', publicKey)
+        .then(() => AsyncStorage.setItem('privet_key', privateKey)
+            .then(() => {
+                dispatch({ type: BTC_AUTH_SUCCESS, payload: {privateKey, publicKey}})
+                getBalanceAfterAuth(dispatch);
+            })
+        );
+};
+
+const getBalanceAfterAuth = (dispatch) => {
+    btcTradeApi.getBalance()
+        .then(data => {
+            console.log('getBalance');
+            console.log(data);
+            if (!data.accounts || !data.accounts.length) {
+                setTimeout(() => {
+                    getBalanceAfterAuth(dispatch);
+                }, 1000);
+            } else {
+                dispatch({ type: BTC_ACCOUNT_BALANCE, payload: data });
+            }
+        })
+        .catch(error => console.log(error));
+};
+
+export const checkSavedKeys = () => {
+    return async dispatch => {
+        try {
+            const publicKey = await AsyncStorage.getItem('public_key');
+            const privateKey = await AsyncStorage.getItem('privet_key');
+            if(publicKey && privateKey) {
+                dispatch({
+                    type: BTC_CHECK_AUTH_KEYS,
+                    payload: { privateKey, publicKey }
+                });
+                return;
+            }
+
+            dispatch({
+                type: BTC_CHECK_AUTH_KEYS
+            });
+        } catch (error) {
+
+        }
+    }
 };
