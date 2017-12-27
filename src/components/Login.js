@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
+import { connect } from 'react-redux';
 import { btcTradeApi } from '../api';
+import { auth } from '../actions';
 
 
 class Login extends Component {
@@ -20,12 +22,13 @@ class Login extends Component {
     };
 
     onSubmitPress = () => {
-        btcTradeApi.auth(this.state.publicKey, this.state.privateKey)
-            .then(data => {
-                console.log('onSubmitResponse');
-                console.log(data);
-            })
-            .catch(error => console.log(error));
+        this.props.auth(this.state.publicKey, this.state.privateKey);
+        // btcTradeApi.auth(this.state.publicKey, this.state.privateKey)
+        //     .then(data => {
+        //         console.log('onSubmitResponse');
+        //         console.log(data);
+        //     })
+        //     .catch(error => console.log(error));
     };
 
     render() {
@@ -55,4 +58,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Login;
+export default connect(null, { auth })(Login);
