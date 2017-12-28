@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { btcTradeApi } from '../api';
 import { auth } from '../actions';
 
 
@@ -23,12 +22,6 @@ class Login extends Component {
 
     onSubmitPress = () => {
         this.props.auth(this.state.publicKey, this.state.privateKey);
-        // btcTradeApi.auth(this.state.publicKey, this.state.privateKey)
-        //     .then(data => {
-        //         console.log('onSubmitResponse');
-        //         console.log(data);
-        //     })
-        //     .catch(error => console.log(error));
     };
 
     render() {

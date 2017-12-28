@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, RefreshControl, FlatList } from 'react-native';
-import { Header } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { sellBuyFetch } from '../actions';
 import CurrencyRow from './CurrencyRow';

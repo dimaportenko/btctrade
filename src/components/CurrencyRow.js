@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text } from 'react-native';
 import { Button, Divider } from 'react-native-elements';
+import { Spinner } from './common';
 import { connect } from 'react-redux';
 import { sellBuyFetch } from '../actions';
 
@@ -22,7 +23,7 @@ class CurrencyRow extends Component {
         const { currencies, code } = this.props;
         const currency = currencies[code];
         if (currency.fetching) {
-            return <ActivityIndicator size='large' />;
+            return <Spinner />;
         }
 
         if (currency.isError) {

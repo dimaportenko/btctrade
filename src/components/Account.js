@@ -3,11 +3,11 @@ import {
     View,
     Text,
     StyleSheet,
-    ActivityIndicator,
     FlatList,
     RefreshControl
 } from 'react-native';
 import { connect } from 'react-redux';
+import { Spinner } from './common';
 import { checkSavedKeys, auth, sellBuyFetch } from "../actions";
 import Login from './Login';
 import BalanceRow from './BalanceRow';
@@ -56,11 +56,7 @@ class Account extends Component {
 
     renderContent() {
         if (!this.props.keysChecked) {
-            return (
-                <View style={styles.spinnerStyle}>
-                    <ActivityIndicator size='large' />
-                </View>
-            );
+            return <Spinner />;
         }
 
         const { publicKey, privateKey } = this.props;
@@ -69,11 +65,7 @@ class Account extends Component {
         }
 
         if (!this.props.accounts || !this.props.accounts.length) {
-            return (
-                <View style={styles.spinnerStyle}>
-                    <ActivityIndicator size='large' />
-                </View>
-            );
+            return <Spinner />;
         }
 
         return (

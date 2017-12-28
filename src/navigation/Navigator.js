@@ -7,5 +7,17 @@ export const Navigator = TabNavigator({
     main: { screen: Main },
     account: { screen: Account },
 }, {
-    lazy: true
+    lazy: true,
+    tabBarOptions: {
+        activeTintColor: 'white',
+        indicatorStyle: {
+            backgroundColor: '#aaa',
+        },
+        labelStyle: {
+            fontSize: 12,
+        },
+        style: {
+            backgroundColor: 'gray',
+        },
+    }
 });
