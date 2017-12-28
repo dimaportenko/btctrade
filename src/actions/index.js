@@ -14,44 +14,40 @@ import {
 export const sellBuyFetch = (code) => {
     return dispatch => {
         dispatch({ type: SELL_BUY_FETCHING, payload: { fetching: true, code }});
-        fetch(`https://btc-trade.com.ua/api/trades/buy/${code}`)
-            .then(response => response.json())
-            .then(buyResult => {
-                fetch(`https://btc-trade.com.ua/api/trades/sell/${code}`)
-                    .then(response1 => response1.json())
-                    .then(sellResult => {
-                        dispatch({
-                            type: SELL_BUY_FETCH,
-                            payload: {
-                                code,
-                                buyResult,
-                                sellResult,
-                                error: false
-                            }
-                        });
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        dispatch({
-                            type: SELL_BUY_FETCH,
-                            payload: {
-                                code,
-                                error: true
-                            }
-                        });
-                    });
-            })
-            .catch(error => {
-                console.log(error);
-                dispatch({
-                    type: SELL_BUY_FETCH,
-                    payload: {
-                        code,
-                        error: true
-                    }
-                });
-            });
+        sellBuyFetchDispatch(code, dispatch);
     };
+};
+
+const sellBuyFetchDispatch = async (code, dispatch) => {
+    try {
+        const buyResult = await btcTradeApi.tradesBuy(code);
+        const sellResult = await btcTradeApi.tradesSell(code);
+
+        if (buyResult.max_price && sellResult.min_price) {
+            dispatch({
+                type: SELL_BUY_FETCH,
+                payload: {
+                    code,
+                    buyResult,
+                    sellResult,
+                    error: false
+                }
+            });
+        } else {
+            setTimeout(() => {
+                sellBuyFetchDispatch(code, dispatch);
+            }, 1000);
+        }
+    } catch (error) {
+        console.log(error);
+        dispatch({
+            type: SELL_BUY_FETCH,
+            payload: {
+                code,
+                error: true
+            }
+        });
+    }
 };
 
 export const auth = (publicKey, privateKey) => {

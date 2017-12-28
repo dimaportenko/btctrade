@@ -101,6 +101,41 @@ class BTCTradeApi {
         formBody = formBody.join("&");
         return formBody;
     }
+
+    tradesBuy(code) {
+        const url = `${this.base_url}/trades/buy/${code}`;
+        return this.getPublic(url);
+    }
+
+    tradesSell(code) {
+        const url = `${this.base_url}/trades/sell/${code}`;
+        return this.getPublic(url);
+    }
+
+    getPublic(url, params) {
+        return this.sendPublic(url, 'GET', params);
+    }
+
+    sendPublic(url, method, params = {}) {
+        return new Promise((resolve, reject) => {
+            console.log({ url, method});
+            fetch(url, { method })
+                .then(response => {
+                    console.log(response);
+                    return response.json();
+                })
+                .then(responseData => {
+                    // TODO: check response code
+                    // debugger;
+                    console.log(responseData);
+                    resolve(responseData);
+                })
+                .catch(error => {
+                    console.log(error);
+                    reject(error);
+                });
+        });
+    }
 }
 
 export const btcTradeApi = new BTCTradeApi();
