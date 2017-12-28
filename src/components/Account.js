@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import {
     View,
+    Text,
     StyleSheet,
     ActivityIndicator,
     FlatList,
     RefreshControl
 } from 'react-native';
 import { connect } from 'react-redux';
-import { checkSavedKeys, auth } from "../actions";
+import { checkSavedKeys, auth, sellBuyFetch } from "../actions";
 import Login from './Login';
 import BalanceRow from './BalanceRow';
 
@@ -31,9 +32,9 @@ class Account extends Component {
     }
 
     onRefresh = () => {
-        // Object.values(this.props.currencies).map(item => {
-        //     this.props.sellBuyFetch(item.code);
-        // });
+        Object.values(this.props.currencies).map(item => {
+            this.props.sellBuyFetch(item.code);
+        });
     };
 
 
@@ -76,20 +77,42 @@ class Account extends Component {
         }
 
         return (
-            <FlatList
-                refreshControl={
-                    <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.onRefresh}
-                    />
-                }
-                keyExtractor={this.keyExtractor}
-                data={this.props.accounts}
-                renderItem={this.renderItem}
-            />
+            <View style={styles.container}>
+                <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.onRefresh}
+                        />
+                    }
+                    keyExtractor={this.keyExtractor}
+                    data={this.props.accounts}
+                    renderItem={this.renderItem}
+                />
+                <Text>Totals - {this.calculateTotals()} uah</Text>
+            </View>
         );
 
     }
+
+    calculateTotals = () => {
+        const { accounts, currencies } = this.props;
+
+        const totals = accounts.reduce((result, item) => {
+            if(Number(item.balance) > 0) {
+                const code = item.currency.toLowerCase() + '_uah';
+                const currency = currencies[code];
+
+                if (currency && Number(currency.buyResult.max_price) > 0) {
+                    return result + currency.buyResult.max_price * item.balance;
+                }
+            }
+
+            return result;
+        }, 0);
+
+        return parseFloat(totals).toFixed(2);
+    };
 
     render() {
         return (
@@ -111,9 +134,13 @@ const styles = StyleSheet.create({
     }
 });
 
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = ({ auth, currencies }) => {
     console.log(auth);
-    return { ...auth };
+    return { ...auth, currencies };
 };
 
-export default connect(mapStateToProps, { checkSavedKeys, auth })(Account);
+export default connect(mapStateToProps, {
+    checkSavedKeys,
+    auth,
+    sellBuyFetch
+})(Account);

@@ -59,7 +59,8 @@ class BalanceRow extends Component {
         const currency = currencies[code];
 
         if (currency && Number(currency.buyResult.max_price) > 0) {
-            return currency.buyResult.max_price * balance;
+            const result = currency.buyResult.max_price * balance;
+            return parseFloat(result).toFixed(8);
         }
         return '';
     };
